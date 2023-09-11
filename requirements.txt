@@ -1,0 +1,12 @@
+os
+streamlit
+langchain
+pydub
+io 
+assemblyai 
+contextlib
+sys
+subprocess
+tempfile 
+boto3
+numpy
