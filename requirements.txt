@@ -2,11 +2,6 @@
 streamlit
 langchain
 pydub
- 
-assemblyai 
-contextlib
-
-subprocess
-tempfile 
+assemblyai  
 boto3
 numpy
