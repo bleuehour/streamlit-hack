@@ -5,3 +5,4 @@ pydub
 assemblyai  
 boto3
 numpy
+openai
