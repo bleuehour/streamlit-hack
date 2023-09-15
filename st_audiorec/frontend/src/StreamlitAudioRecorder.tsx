@@ -75,7 +75,16 @@ class StAudioRec extends StreamlitComponentBase<State> {
       audioDataURL: "",
       recordState: RecordState.START,
     })
+
     Streamlit.setComponentValue("")
+
+    // Automatically stop recording after 20 seconds
+    setTimeout(() => {
+      this.setState({
+        reset: false,
+        recordState: RecordState.STOP,
+      })
+    }, 10000) // 20 seconds in milliseconds
   }
 
   private onClick_stop = () => {

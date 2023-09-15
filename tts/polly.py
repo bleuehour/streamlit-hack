@@ -5,9 +5,9 @@ import sys
 import subprocess
 from tempfile import gettempdir
 import boto3
+from templates.maps import voice
 
 
-names = ["Seoyeon","Takumi"]
 
 Session = boto3.Session(
         aws_access_key_id = st.secrets["aws_access_key_id"],
@@ -15,12 +15,12 @@ Session = boto3.Session(
         region_name = "us-east-1"
     )
 
-def synthesize_speech(text):
+def synthesize_speech(text,lang):
     Polly = Session.client("polly")
     response = Polly.synthesize_speech(
         Text=text,
         OutputFormat="mp3",
-        VoiceId="Seoyeon")
+        VoiceId=voice[lang])
     if "AudioStream" in response:
         # Note: Closing the stream is important because the service throttles on the
         # number of parallel connections. Here we are using contextlib.closing to
