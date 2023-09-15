@@ -6,3 +6,4 @@ assemblyai
 boto3
 numpy
 openai
+ffmpeg-python
