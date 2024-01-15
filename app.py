@@ -9,10 +9,18 @@ import info.text
 from utils.process import main
 from chain.llms import runllm
 from utils.styles import styles
+
+from IPython.display import Audio
+
  
 
 ### STYLES
-styles()
+
+### MISC
+def chatclear():
+    if msgs.messages:
+        msgs.clear()
+        print("clear")
 
 ### MESSAGE MEMORY  
 msgs = StreamlitChatMessageHistory(key="langchain_messages")
@@ -26,9 +34,13 @@ current_lang = col.selectbox('Language',(None,'fr','ja',"zh"))
 st.title("CONVO.AI 🗺")
 
 scenario = st.selectbox("Pick a scenario",
-(None,"Introduce Yourself - Speaking","Answer questions on a piece of text - Reading","Translate sentences - Reading")
+(None,"Introduce Yourself - Speaking","Answer questions on a piece of text - Reading")
 )
+### STATE
 
+if "load_state" not in st.session_state or st.session_state.load_state != [scenario,current_lang]:
+    chatclear()
+    st.session_state.load_state = [scenario,current_lang]
 
 ### SIDEBAR 
 if scenario and current_lang:
@@ -41,11 +53,12 @@ st.sidebar.title(titletext + " " + scen_emoj[titletext])
 if scenario == "Introduce Yourself - Speaking":
     st.sidebar.subheader("Conversation starters")
     st.sidebar.text(info.text.intro[current_lang])
+
 if scenario == "Answer questions on a piece of text - Reading":
+    st.sidebar.subheader("Read")
     st.sidebar.text("hello")
 
-if scenario == "Translate sentences - Reading":
-    st.sidebar.text("hello")
+
 
 ### AUDIO COMPONENT  
 if scenario == "Introduce Yourself - Speaking" and current_lang:
@@ -59,29 +72,22 @@ for msg in msgs.messages:
 
 #### SCENARIOS
 if scenario == "Introduce Yourself - Speaking" and current_lang:
+
+    if "audio" not in st.session_state or st.session_state["audio"] == [scenario,current_lang]:
+        data = main(_wav_audio_data,current_lang)
+    else:
+        data = None
     
-    data = main(_wav_audio_data,current_lang)
+    st.session_state["audio"]= [scenario,current_lang]
+    
     if data:
-        st.chat_message("human").write(data)
+        st.chat_message("Human").write(data)
         response = runllm(lang=language_map[current_lang],data=data,memory=memory)
-        st.chat_message("ai").write(response)
+        st.chat_message("Ai").write(response)
         if response:
-            st.audio(synthesize_speech(response,current_lang),format="mp3")
-
-# if scenario == "Translate sentences - Reading":
-#     prompt = PromptTemplate(input_variables=["history","language", "human_input"], template=translate)
-#     llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory, verbose=True)
-
-
-
-#     if txtinput := st.chat_input(placeholder="say: let's begin!"):
-#         st.chat_message("human").write(txtinput)
-#         response = llm_chain.run({"language":language_map[current_lang],"human_input":txtinput})
-#         st.chat_message("ai").write(response)
-
-
-
-if scenario == "Answer questions on a piece of text - Reading":
+            st.write(Audio(synthesize_speech(response,current_lang),autoplay=True))
+###
+if scenario == "Answer questions on a piece of text - Reading" and current_lang:
     pass
 
 
